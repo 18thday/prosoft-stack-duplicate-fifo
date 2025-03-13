@@ -24,6 +24,9 @@ public:
 
     StackDuplicateFifo& operator=(StackDuplicateFifo&& other)
     {
+        if (this == &other) {
+            return *this;
+        }
         m_stack = std::move(other.m_stack);
         m_valueToCount = std::move(other.m_valueToCount);
         m_size = other.m_size;
@@ -31,12 +34,12 @@ public:
         return *this;
     }
 
-    T& Top() noexcept
+    T& Top()
     {
         RemoveInvalid();
         return m_stack.back();
     }
-    const T& Top() const noexcept
+    const T& Top() const
     {
         RemoveInvalid();
         return m_stack.back();
@@ -81,7 +84,10 @@ public:
             m_valueToCount.erase(it);
             m_stack.pop_back();
         }
-        --m_size;
+        if (--m_size == 0 && !m_stack.empty())
+        {
+            m_stack.clear();
+        }
     }
 
 private:
@@ -91,7 +97,7 @@ private:
 
     void RemoveInvalid()
     {
-        while (!m_valueToCount.count(m_stack.back()) && !m_stack.empty())
+        while (!m_stack.empty() && !m_valueToCount.count(m_stack.back()))
         {
             m_stack.pop_back();
         }
