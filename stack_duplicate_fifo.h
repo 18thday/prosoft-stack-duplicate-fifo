@@ -83,7 +83,7 @@ public:
 
     void Pop()
     {
-        if (m_stack.size() == 0)
+        if (m_stack.empty())
         {
             return;
         }
