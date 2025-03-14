@@ -45,6 +45,8 @@ TEST(BasicTest, CopyCtor)
     StackDuplicateFifo<int> copy_stack = stack;
     EXPECT_EQ(stack.Size(), 5);
     EXPECT_EQ(stack.Empty(), false);
+    EXPECT_EQ(copy_stack.Size(), 5);
+    EXPECT_EQ(copy_stack.Empty(), false);
 
     while (!stack.Empty())
     {
@@ -85,6 +87,37 @@ TEST(BasicTest, CopyAssignment)
             EXPECT_EQ(stack.Top(), copy_stack.Top());
             stack.Pop();
             copy_stack.Pop();
+        }
+    }
+}
+
+TEST(BasicTest, SelfCopyAssignment)
+{
+    {
+        StackDuplicateFifo<int> a;
+        auto& r = a;
+        a = r;
+        EXPECT_EQ(a.Size(), 0);
+        EXPECT_EQ(a.Empty(), true);
+    }
+    {
+        std::vector<int> expected = {0, 1, 2, 3, 4};
+        StackDuplicateFifo<int> a;
+        for (int i = 0; i < 5; ++i)
+        {
+            a.Push(i);
+        }
+        auto& r = a;
+        a = r;
+        EXPECT_EQ(a.Size(), 5);
+        EXPECT_EQ(a.Empty(), false);
+
+        while (!expected.empty())
+        {
+            EXPECT_EQ(a.Size(), expected.size());
+            EXPECT_EQ(a.Top(), expected.back());
+            a.Pop();
+            expected.pop_back();
         }
     }
 }
